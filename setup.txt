@@ -1,0 +1,25 @@
+install go: https://go.dev/doc/install
+
+setting up module:
+go mod init example.com/COEN379Project
+
+Downloading:
+go get github.com/gin-gonic/gin
+- we are using the gin framework so in the code we import it
+go get github.com/jmoiron/sqlx
+- we are using sqlx library for database handling
+- see more information: https://jmoiron.github.io/sqlx/
+go get github.com/lib/pq
+- PostgreSQL database driver
+
+Use PostgreSQL:
+Set up two databases with two tables each...
+- name db1 and db2
+Set up test user with credentials listed
+
+Run:
+- run on terminal: go run main.go twopc.go
+- on browser: http://localhost:8080/ping -> should result in pong message output
+- on terminal: curl -X POST -H "Content-Type: application/json" -d '{"user_id": 1, "product_name": "Laptop", "amount": 1200}' http://localhost:8080/distributed-transaction 
+    -> should result in status success output
+    -> should see updated in both databases
