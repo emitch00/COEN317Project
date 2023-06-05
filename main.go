@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hashicorp/memberlist"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
@@ -15,24 +14,6 @@ const (
 )
 
 func main() {
-	log.Println("Starting node.")
-
-	config := memberlist.DefaultLocalConfig()
-	list, err := memberlist.Create(config)
-	if err != nil {
-		log.Println("Failed to create memberlist: " + err.Error())
-	}
-
-	clusterCount, err := list.Join([]string{"localhost"})
-	log.Println("Joing cluster of size", string(clusterCount))
-	if err != nil {
-		log.Println("Failed to join cluster: " + err.Error())
-	}
-
-	log.Println("Members:")
-	for _, member := range list.Members() {
-		log.Printf("  %s %s\n", member.Name, member.Addr)
-	}
 
 	db1, err := sqlx.Connect("postgres", db1ConnectionString)
 	if err != nil {
