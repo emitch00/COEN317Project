@@ -91,6 +91,7 @@ func updateFinger() {
 				done = true
 			}
 		}
+		value.Successor = value.Finger[0]
 	}
 }
 
@@ -101,31 +102,28 @@ func lookup(s string) bool {
 		return false
 	}
 	var currentNode *Node = allnodes[0]
-	for hashValue > currentNode.ID {
+	for hashValue >= currentNode.ID {
 		if hashValue == currentNode.ID {
-			for _, value := range currentNode.storage {
-				fmt.Println("debug")
-				if s == value.name {
+			for _, infoCheck := range currentNode.storage {
+				if s == infoCheck.name {
 					return true
 				}
 			}
 			return false
 		} else if hashValue < currentNode.ID {
-			for i := 0; i < m; i++ {
-				if hashValue == currentNode.Finger[i].ID {
-					for _, value := range currentNode.Finger[i].storage {
-						if s == value.name {
+			for _, fingerEntry := range currentNode.Finger {
+				if fingerEntry.ID == hashValue {
+					for _, infoCheck := range fingerEntry.storage {
+						if s == infoCheck.name {
 							return true
 						}
 					}
 					return false
-				} else if hashValue > currentNode.Finger[i].ID {
-					currentNode = currentNode.Finger[i-1]
-					break
 				}
 			}
+			currentNode = currentNode.Successor
 		} else {
-			return false
+			currentNode = currentNode.Successor
 		}
 	}
 	return false
@@ -134,7 +132,7 @@ func lookup(s string) bool {
 func userCreation(s string) {
 	if lookup(s) {
 		fmt.Println("This name has been picked before")
-	} else {
+	} else if !lookup(s) {
 		var newUser info
 		newUser.name = s
 		createNode(hash(s), newUser)
@@ -165,7 +163,7 @@ func main() {
 	userCreation("node2")
 	userCreation("node3")
 	userCreation("node4")
-	userCreation("node1")
+	userCreation("node5")
 	/*
 		node1 := createNode(hash("node1"), "node1")
 		node2 := createNode(hash("node2"), "node2")
