@@ -19,7 +19,7 @@ type Node struct {
 	storage   []info
 }
 
-func createNode(id int, new info) *Node {
+func createUser(id int, new info) *Node {
 	node := &Node{
 		ID:        id,
 		Successor: nil,
@@ -35,7 +35,9 @@ func createNode(id int, new info) *Node {
 	var check bool = false
 	var j int = 0
 	for _, value := range allnodes {
-		if node.ID < value.ID {
+		if node.ID == value.ID {
+			value.storage = append(value.storage, new)
+		} else if node.ID < value.ID {
 			allnodes = append(allnodes[:j+1], allnodes[j:]...)
 			allnodes[j] = node
 			check = true
@@ -131,11 +133,11 @@ func lookup(s string) bool {
 
 func userCreation(s string) {
 	if lookup(s) {
-		fmt.Println("This name has been picked before")
+		fmt.Println("This name has been picked before. You need to pick another name")
 	} else if !lookup(s) {
 		var newUser info
 		newUser.name = s
-		createNode(hash(s), newUser)
+		createUser(hash(s), newUser)
 	}
 }
 
