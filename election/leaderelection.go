@@ -16,7 +16,7 @@ type LeaderElection struct {
 func NewLeaderElection(nodes []int) *LeaderElection {
 	le := &LeaderElection{
 		nodes:      nodes,
-		leaderID:   0,
+		leaderID:   -1,
 		monitorCh:  make(chan int),
 		candidates: make(map[int]bool),
 	}

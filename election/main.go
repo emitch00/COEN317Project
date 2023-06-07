@@ -24,6 +24,19 @@ func main() {
 	}
 	fmt.Println("The leader is...")
 	fmt.Println(leaderID)
+//
+	nodeIDs := []int{1, 2, 3, 4, 5}
+	leaderElection := NewLeaderElection(nodeIDs)
+
+	nodeID := 3
+	leaderID, err := leaderElection.ElectLeader(nodeID)
+	if err != nil {
+		fmt.Println("Error electing leader:", err)
+		return
+	}
+
+	fmt.Println("Leader elected:", leaderID)
+
 
 	//printFinger(allnodes[0])
 	//printNames(allnodes[0])
