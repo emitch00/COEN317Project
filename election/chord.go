@@ -56,6 +56,8 @@ func createUser(id int, new info) *Node {
 	}
 
 	updateFinger()
+
+	//electLeader(int)
 	return nil
 }
 
@@ -204,17 +206,3 @@ const (
 	bits          = 256
 	startingUsers = 1000
 )
-
-func main() {
-	// Create nodes
-	userCreation("node1")
-	userCreation("node2")
-	userCreation("node3")
-	userCreation("node4")
-	userCreation("node5")
-
-	loadRing()
-
-	printFinger(allnodes[0])
-	printNames(allnodes[0])
-}

@@ -1,4 +1,4 @@
-package leaderelection
+package main
 
 import (
 	//"strconv"
@@ -6,19 +6,19 @@ import (
 )
 
 type LeaderElection struct {
-	nodes       []Node
-	leaderID    int
-	monitorCh   chan int
-	candidates  map[int]bool
-	lock        sync.Mutex
+	nodes      []Node
+	leaderID   int
+	monitorCh  chan int
+	candidates map[int]bool
+	lock       sync.Mutex
 }
 
 func NewLeaderElection(nodes []Node) *LeaderElection {
 	le := &LeaderElection{
-		nodes:       nodes,
-		leaderID:    0,
-		monitorCh:   make(chan int),
-		candidates:  make(map[int]bool),
+		nodes:      nodes,
+		leaderID:   0,
+		monitorCh:  make(chan int),
+		candidates: make(map[int]bool),
 	}
 
 	go le.monitorLeadership()
@@ -45,8 +45,6 @@ func (le *LeaderElection) ElectLeader(nodeID int) (int, error) {
 
 	return le.leaderID, nil
 }
-
-
 
 func (le *LeaderElection) monitorLeadership() {
 	for {
