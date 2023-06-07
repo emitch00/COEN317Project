@@ -27,7 +27,7 @@ func main() {
 		fmt.Println(leaderID)
 	*/
 	//nodeIDs := []int{1, 2, 3, 4, 5}
-	leaderElection := NewLeaderElection(allnodesID)
+	leaderElection := NewLeaderElection(allnodes)
 	leaderID, err := leaderElection.ElectLeader()
 	if err != nil {
 		fmt.Println("Error electing leader:", err)
@@ -35,6 +35,9 @@ func main() {
 	}
 
 	fmt.Println("Leader elected:", leaderID)
+
+	fmt.Println(allnodes[17].ID)
+	fmt.Println(allnodes[17].leader)
 
 	//printFinger(allnodes[0])
 	//printNames(allnodes[0])
