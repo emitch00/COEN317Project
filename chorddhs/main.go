@@ -4,14 +4,20 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"math"
+	"math/rand"
+	"time"
 )
 
-var allnodes []*Node
+var allnodes []*Node //global array to account all available nodes in ascending order
 
+// represents the client's information
 type info struct {
-	name string
+	name     string
+	Username string
+	password int
 }
 
+// each node has a finger table to oversee other nodes it can go to
 type Node struct {
 	ID        int
 	Successor *Node
@@ -19,6 +25,7 @@ type Node struct {
 	storage   []info
 }
 
+// either a node is created to add the user or the uder is added to a preexisting node
 func createUser(id int, new info) *Node {
 	node := &Node{
 		ID:        id,
@@ -28,15 +35,13 @@ func createUser(id int, new info) *Node {
 
 	node.storage = append(node.storage, new)
 
-	for i := 0; i < m; i++ {
-		node.Finger[i] = node
-	}
-
 	var check bool = false
 	var j int = 0
 	for _, value := range allnodes {
 		if node.ID == value.ID {
 			value.storage = append(value.storage, new)
+			check = true
+			break
 		} else if node.ID < value.ID {
 			allnodes = append(allnodes[:j+1], allnodes[j:]...)
 			allnodes[j] = node
@@ -54,6 +59,7 @@ func createUser(id int, new info) *Node {
 	return nil
 }
 
+// used after a new node enters
 func updateFinger() {
 	for _, value := range allnodes {
 		for i := 0; i < m; i++ {
@@ -97,6 +103,7 @@ func updateFinger() {
 	}
 }
 
+// returns true or false if name exists
 func lookup(s string) bool {
 	var hashValue int
 	hashValue = hash(s)
@@ -104,7 +111,8 @@ func lookup(s string) bool {
 		return false
 	}
 	var currentNode *Node = allnodes[0]
-	for hashValue >= currentNode.ID {
+
+	for hashValue > currentNode.ID {
 		if hashValue == currentNode.ID {
 			for _, infoCheck := range currentNode.storage {
 				if s == infoCheck.name {
@@ -113,24 +121,28 @@ func lookup(s string) bool {
 			}
 			return false
 		} else if hashValue < currentNode.ID {
+			var reference int = 0
 			for _, fingerEntry := range currentNode.Finger {
-				if fingerEntry.ID == hashValue {
+				if hashValue == fingerEntry.ID {
 					for _, infoCheck := range fingerEntry.storage {
 						if s == infoCheck.name {
 							return true
 						}
 					}
 					return false
+				} else if hashValue < fingerEntry.ID {
+					reference = reference + 1
 				}
 			}
-			currentNode = currentNode.Successor
+			currentNode = currentNode.Finger[reference]
 		} else {
-			currentNode = currentNode.Successor
+			return false
 		}
 	}
 	return false
 }
 
+// Users to prevent duplicate names
 func userCreation(s string) {
 	if lookup(s) {
 		fmt.Println("This name has been picked before. You need to pick another name")
@@ -141,15 +153,11 @@ func userCreation(s string) {
 	}
 }
 
+// hash function to convert to 8 bits
 func hash(key string) int {
 	hash := sha1.Sum([]byte(key))
 	return int(hash[0])
 }
-
-const (
-	m    = 8
-	bits = 256
-)
 
 func printFinger(n *Node) {
 	fmt.Printf("Node with id %d ", n.ID)
@@ -159,6 +167,44 @@ func printFinger(n *Node) {
 	}
 }
 
+func printNames(n *Node) {
+	fmt.Printf("Node with id %d ", n.ID)
+	fmt.Println(" ")
+	for i := 0; i < len(n.storage); i++ {
+		fmt.Println(n.storage[i].name)
+	}
+}
+
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func StringWithCharset(length int, charset string) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
+// random string of length
+func randomString(length int) string {
+	return StringWithCharset(length, charset)
+}
+
+// load the ring by a number of randoms users (startingUsers)
+func loadRing() {
+	for i := 0; i < startingUsers; i++ {
+		userCreation(randomString(12))
+	}
+}
+
+const (
+	m             = 8
+	bits          = 256
+	startingUsers = 1000
+)
+
 func main() {
 	// Create nodes
 	userCreation("node1")
@@ -166,15 +212,9 @@ func main() {
 	userCreation("node3")
 	userCreation("node4")
 	userCreation("node5")
-	/*
-		node1 := createNode(hash("node1"), "node1")
-		node2 := createNode(hash("node2"), "node2")
-		node3 := createNode(hash("node3"), "node3")
-		node4 := createNode(hash("node4"), "node4")
-	*/
+
+	loadRing()
+
 	printFinger(allnodes[0])
-	printFinger(allnodes[1])
-	printFinger(allnodes[2])
-	printFinger(allnodes[3])
-	printFinger(allnodes[4])
+	printNames(allnodes[0])
 }
