@@ -33,7 +33,7 @@ func (le *LeaderElection) ElectLeader(nodeID int) (int, error) {
 	le.candidates[nodeID] = true
 
 	// Check if the leader has already been elected
-	if le.leaderID != -1 {
+	if le.leaderID != 0 {
 		return le.leaderID, nil
 	}
 
