@@ -15,20 +15,21 @@ func main() {
 	loadRing()
 
 	var err error
-	nodeslist := []int{7, 2, 3, 4, 5}
-	var leader2 = NewLeaderElection(nodeslist)
-	leaderID, err = leader2.ElectLeader(hash("node2"))
-	if err != nil {
-		fmt.Print("Error electing leader", err)
-		return
-	}
-	fmt.Println("The leader is...")
-	fmt.Println(leaderID)
-//
-	nodeIDs := []int{1, 2, 3, 4, 5}
-	leaderElection := NewLeaderElection(nodeIDs)
+	/*
+		nodeslist := []int{7, 2, 3, 4, 5}
+		var leader2 = NewLeaderElection(nodeslist)
+		leaderID, err = leader2.ElectLeader(hash("node2"))
+		if err != nil {
+			fmt.Print("Error electing leader", err)
+			return
+		}
+		fmt.Println("The leader is...")
+		fmt.Println(leaderID)
+	*/
+	//nodeIDs := []int{1, 2, 3, 4, 5}
+	leaderElection := NewLeaderElection(allnodesID)
 
-	nodeID := 3
+	nodeID := 5
 	leaderID, err := leaderElection.ElectLeader(nodeID)
 	if err != nil {
 		fmt.Println("Error electing leader:", err)
@@ -36,7 +37,6 @@ func main() {
 	}
 
 	fmt.Println("Leader elected:", leaderID)
-
 
 	//printFinger(allnodes[0])
 	//printNames(allnodes[0])
