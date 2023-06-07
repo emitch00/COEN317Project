@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func main() {
 	// Create nodes
 	/*
@@ -11,19 +13,18 @@ func main() {
 	*/
 
 	loadRing()
-	/*
-		var leaderID int
-		var leader LeaderElection
-		leader.nodes = allnodes
-		var err error
-		leaderID, err = leader.ElectLeader(hash("node2"))
-		if err != nil {
-			fmt.Print("Error electing leader", err)
-			return
-		}
-		fmt.Println("The leader is...")
-		fmt.Println(leaderID)
-	*/
+
+	var err error
+	nodeslist := []int{7, 2, 3, 4, 5}
+	var leader2 = NewLeaderElection(nodeslist)
+	leaderID, err = leader2.ElectLeader(hash("node2"))
+	if err != nil {
+		fmt.Print("Error electing leader", err)
+		return
+	}
+	fmt.Println("The leader is...")
+	fmt.Println(leaderID)
+
 	//printFinger(allnodes[0])
 	//printNames(allnodes[0])
 }

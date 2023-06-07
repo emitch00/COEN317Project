@@ -9,6 +9,8 @@ import (
 )
 
 var allnodes []*Node //global array to account all available nodes in ascending order
+var leaderID int
+var leader LeaderElection
 
 // represents the client's information
 type info struct {
@@ -44,6 +46,7 @@ func createUser(id int, new info) *Node {
 			break
 		} else if node.ID < value.ID {
 			allnodes = append(allnodes[:j+1], allnodes[j:]...)
+			//leader.nodes = append(leader.nodes, id)
 			allnodes[j] = node
 			check = true
 			break
@@ -53,6 +56,7 @@ func createUser(id int, new info) *Node {
 
 	if !check {
 		allnodes = append(allnodes, node)
+		//leader.nodes = append(leader.nodes, id)
 	}
 
 	updateFinger()
