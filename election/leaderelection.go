@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"strconv"
 	"sync"
 )
 
@@ -16,7 +15,7 @@ type LeaderElection struct {
 func NewLeaderElection(nodes []*Node) *LeaderElection {
 	le := &LeaderElection{
 		nodes:      nodes,
-		leaderID:   0,
+		leaderID:   -1,
 		monitorCh:  make(chan int),
 		candidates: make(map[int]bool),
 	}
@@ -47,6 +46,9 @@ func (le *LeaderElection) ElectLeader() (int, error) {
 	// Set the candidate with the highest ID as the leader
 	le.leaderID = maxID
 
+	 // Update leader information on all other nodes
+	 BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[le.leaderID].LeadersPublicKey)
+
 	return le.leaderID, nil
 }
 
@@ -62,12 +64,17 @@ func (le *LeaderElection) monitorLeadership() {
 		le.candidates = make(map[int]bool)
 		le.candidates[leaderID] = true
 
+		// Update leader information on all other nodes
+        BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[le.leaderID].LeadersPublicKey)
+
 		le.lock.Unlock()
 	}
 }
 
 func (le *LeaderElection) UpdateLeader(leaderID int) {
 	le.monitorCh <- leaderID
+	// Update leader information on all other nodes
+	BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[le.leaderID].LeadersPublicKey)
 }
 
 func (le *LeaderElection) GetLeaderID() int {
@@ -82,9 +89,28 @@ func (le *LeaderElection) GetCandidates() []int {
 	defer le.lock.Unlock()
 
 	var candidates []int
-	for candidate := range le.candidates {
-		candidates = append(candidates, candidate)
-	}
 
 	return candidates
+}
+
+func (n *Node) UpdateLeader(leaderID, leadersPublicKey int) {
+    n.leader = leaderID
+    n.LeadersPublicKey = leadersPublicKey
+}
+
+
+func BroadcastUpdateLeaderInfo(nodes []*Node, leaderID, leadersPublicKey int) {
+	for _, node := range nodes {
+		if node.ID != leaderID {
+			node.UpdateLeaderInfo(leaderID, leadersPublicKey)
+		}
+	}
+}
+
+func (n *Node) UpdateLeaderInfo(leaderID, leadersPublicKey int) {
+	n.lock.Lock()
+	defer n.lock.Unlock()
+
+	n.leader = leaderID
+	n.LeadersPublicKey = leadersPublicKey
 }

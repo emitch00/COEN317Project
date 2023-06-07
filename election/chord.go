@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/rand"
 	"time"
+	"sync"
 )
 
 var allnodes []*Node //global array to account all available nodes in ascending order
@@ -30,7 +31,10 @@ type Node struct {
 	OwnPublicKey     int //all nodes know leader's public as well
 	LeadersPublicKey int
 	privateKey       int
+	lock             sync.Mutex
 }
+
+
 
 // either a node is created to add the user or the uder is added to a preexisting node
 func createUser(id int, new info) *Node {
