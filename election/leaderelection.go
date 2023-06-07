@@ -6,14 +6,14 @@ import (
 )
 
 type LeaderElection struct {
-	nodes      []Node
+	nodes      []int
 	leaderID   int
 	monitorCh  chan int
 	candidates map[int]bool
 	lock       sync.Mutex
 }
 
-func NewLeaderElection(nodes []Node) *LeaderElection {
+func NewLeaderElection(nodes []int) *LeaderElection {
 	le := &LeaderElection{
 		nodes:      nodes,
 		leaderID:   0,
