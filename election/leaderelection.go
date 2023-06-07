@@ -6,14 +6,14 @@ import (
 )
 
 type LeaderElection struct {
-	nodes      []int
+	nodes      []*Node
 	leaderID   int
 	monitorCh  chan int
 	candidates map[int]bool
 	lock       sync.Mutex
 }
 
-func NewLeaderElection(nodes []int) *LeaderElection {
+func NewLeaderElection(nodes []*Node) *LeaderElection {
 	le := &LeaderElection{
 		nodes:      nodes,
 		leaderID:   0,
@@ -43,7 +43,7 @@ func (le *LeaderElection) ElectLeader() (int, error) {
 			maxID = candidateID
 		}
 	}
-	
+
 	// Set the candidate with the highest ID as the leader
 	le.leaderID = maxID
 

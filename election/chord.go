@@ -22,10 +22,14 @@ type info struct {
 
 // each node has a finger table to oversee other nodes it can go to
 type Node struct {
-	ID        int
-	Successor *Node
-	Finger    []*Node
-	storage   []info
+	ID               int
+	Successor        *Node
+	Finger           []*Node
+	storage          []info
+	leader           int
+	OwnPublicKey     int //all nodes know leader's public as well
+	LeadersPublicKey int
+	privateKey       int
 }
 
 // either a node is created to add the user or the uder is added to a preexisting node
