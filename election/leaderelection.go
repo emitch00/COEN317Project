@@ -16,7 +16,7 @@ type LeaderElection struct {
 func NewLeaderElection(nodes []int) *LeaderElection {
 	le := &LeaderElection{
 		nodes:      nodes,
-		leaderID:   -1,
+		leaderID:   0,
 		monitorCh:  make(chan int),
 		candidates: make(map[int]bool),
 	}
@@ -26,22 +26,26 @@ func NewLeaderElection(nodes []int) *LeaderElection {
 	return le
 }
 
-func (le *LeaderElection) ElectLeader(nodeID int) (int, error) {
+func (le *LeaderElection) ElectLeader() (int, error) {
 	le.lock.Lock()
 	defer le.lock.Unlock()
 
-	le.candidates[nodeID] = true
-
-	// Check if the leader has already been elected
-	if le.leaderID != 0 {
+	// Check if the current leader is still a candidate
+	if _, ok := le.candidates[le.leaderID]; ok {
+		// Current leader is still available, return the current leader's ID
 		return le.leaderID, nil
 	}
 
-	// Elect the leader from the candidates
+	// Find the candidate with the highest ID
+	var maxID int
 	for candidateID := range le.candidates {
-		le.leaderID = candidateID
-		break
+		if candidateID > maxID {
+			maxID = candidateID
+		}
 	}
+	
+	// Set the candidate with the highest ID as the leader
+	le.leaderID = maxID
 
 	return le.leaderID, nil
 }
