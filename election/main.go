@@ -14,6 +14,8 @@ func main() {
 
 	loadRing()
 
+	testSpeed()
+
 	var err error
 	//nodeIDs := []int{1, 2, 3, 4, 5}
 

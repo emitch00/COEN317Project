@@ -216,6 +216,36 @@ func loadRing() {
 	}
 }
 
+func testSpeed() {
+	start := time.Now()
+
+	var entireLookup bool = false
+
+	for _, value := range allnodes {
+		for _, value2 := range value.storage {
+			if value2.name == "testuser" {
+				entireLookup = true
+			}
+		}
+	}
+
+	fmt.Println(entireLookup)
+
+	elapsed := time.Since(start)
+
+	fmt.Println("Entire lookup lookup took ", elapsed)
+
+	start = time.Now()
+
+	dhsLookup := lookup("testuser")
+
+	fmt.Println(dhsLookup)
+
+	elapsed = time.Since(start)
+
+	fmt.Println("Chord DHS lookup took ", elapsed)
+}
+
 const (
 	m             = 8
 	bits          = 256

@@ -73,8 +73,16 @@ func (le *LeaderElection) monitorLeadership() {
 		le.candidates = make(map[int]bool)
 		le.candidates[leaderID] = true
 
+		var leaderIndex int = 0
+		for _, value := range le.nodes {
+			if value.ID == leaderID {
+				break
+			}
+			leaderIndex = leaderIndex + 1
+		}
+
 		// Update leader information on all other nodes
-		BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[le.leaderID].LeadersPublicKey)
+		BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[leaderIndex].OwnPublicKey)
 
 		le.lock.Unlock()
 	}
@@ -83,7 +91,16 @@ func (le *LeaderElection) monitorLeadership() {
 func (le *LeaderElection) UpdateLeader(leaderID int) {
 	le.monitorCh <- leaderID
 	// Update leader information on all other nodes
-	BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[le.leaderID].LeadersPublicKey)
+
+	var leaderIndex int = 0
+	for _, value := range le.nodes {
+		if value.ID == leaderID {
+			break
+		}
+		leaderIndex = leaderIndex + 1
+	}
+
+	BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[leaderIndex].OwnPublicKey)
 }
 
 func (le *LeaderElection) GetLeaderID() int {
