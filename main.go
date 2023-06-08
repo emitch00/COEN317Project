@@ -1,4 +1,5 @@
 package main
+<<<<<<< HEAD
 import ("github.com/gin-gonic/gin"
 		"github.com/jmoiron/sqlx"
 		_ "github.com/lib/pq"
@@ -13,14 +14,32 @@ const	(db1ConnectionString = "host=127.0.0.1 port=1433 user=postgres password=pa
 var		(g errgroup.Group)
 
 func main(){
+=======
+
+import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+)
+
+const (
+	db1ConnectionString = "host=127.0.0.1 port=1433 user=postgres password=password dbname=db1 sslmode=disable"
+	db2ConnectionString = "host=127.0.0.1 port=1433 user=postgres password=password dbname=db2 sslmode=disable"
+)
+
+func main() {
+
+>>>>>>> 269e25068faff7d1e6724efa1766a30a02cd0c40
 	db1, err := sqlx.Connect("postgres", db1ConnectionString)
-	if err != nil{
+	if err != nil {
 		log.Fatalln(err)
 	}
 	defer db1.Close()
 
 	db2, err := sqlx.Connect("postgres", db2ConnectionString)
-	if err != nil{
+	if err != nil {
 		log.Fatalln(err)
 	}
 	defer db2.Close()
@@ -36,7 +55,7 @@ func main(){
 	participant2 := &Participant{DB: db2, ID:2, Password:"two"}
 	participant3 := &Participant{DB: db3, ID:3, Password:"three"}
 	router := gin.Default()
-	
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
