@@ -18,7 +18,7 @@ var allnodesID []int
 type info struct {
 	name     string
 	Username string
-	password int
+	password string
 }
 
 // each node has a finger table to oversee other nodes it can go to
@@ -160,12 +160,13 @@ func lookup(s string) bool {
 }
 
 // Users to prevent duplicate names
-func userCreation(s string) {
+func userCreation(s string, p string) {
 	if lookup(s) {
 		fmt.Println("This name has been picked before. You need to pick another name")
 	} else if !lookup(s) {
 		var newUser info
 		newUser.name = s
+		newUser.password = p
 		createUser(hash(s), newUser)
 	}
 }
@@ -212,7 +213,7 @@ func randomString(length int) string {
 // load the ring by a number of randoms users (startingUsers)
 func loadRing() {
 	for i := 0; i < startingUsers; i++ {
-		userCreation(randomString(12))
+		userCreation(randomString(12), "password")
 	}
 }
 
