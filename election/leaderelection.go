@@ -46,8 +46,17 @@ func (le *LeaderElection) ElectLeader() (int, error) {
 	// Set the candidate with the highest ID as the leader
 	le.leaderID = maxID
 
-	 // Update leader information on all other nodes
-	 BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[le.leaderID].LeadersPublicKey)
+	var leaderIndex int = 0
+	for _, value := range le.nodes {
+		if value.ID == leaderID {
+			break
+		}
+		leaderIndex = leaderIndex + 1
+	}
+
+	// Update leader information on all other nodes
+
+	BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[leaderIndex].OwnPublicKey)
 
 	return le.leaderID, nil
 }
@@ -65,7 +74,7 @@ func (le *LeaderElection) monitorLeadership() {
 		le.candidates[leaderID] = true
 
 		// Update leader information on all other nodes
-        BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[le.leaderID].LeadersPublicKey)
+		BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[le.leaderID].LeadersPublicKey)
 
 		le.lock.Unlock()
 	}
@@ -94,10 +103,9 @@ func (le *LeaderElection) GetCandidates() []int {
 }
 
 func (n *Node) UpdateLeader(leaderID, leadersPublicKey int) {
-    n.leader = leaderID
-    n.LeadersPublicKey = leadersPublicKey
+	n.leader = leaderID
+	n.LeadersPublicKey = leadersPublicKey
 }
-
 
 func BroadcastUpdateLeaderInfo(nodes []*Node, leaderID, leadersPublicKey int) {
 	for _, node := range nodes {

@@ -15,18 +15,19 @@ func main() {
 	loadRing()
 
 	var err error
-	/*
-		nodeslist := []int{7, 2, 3, 4, 5}
-		var leader2 = NewLeaderElection(nodeslist)
-		leaderID, err = leader2.ElectLeader(hash("node2"))
-		if err != nil {
-			fmt.Print("Error electing leader", err)
-			return
-		}
-		fmt.Println("The leader is...")
-		fmt.Println(leaderID)
-	*/
 	//nodeIDs := []int{1, 2, 3, 4, 5}
+
+	fmt.Println("node id is", allnodes[17].ID)
+	fmt.Println("node own public key is", allnodes[17].OwnPublicKey)
+	fmt.Println("leader is", allnodes[17].leader)
+	fmt.Println("leader public key is", allnodes[17].LeadersPublicKey)
+
+	fmt.Println("node id is", allnodes[20].ID)
+	fmt.Println("node own public key is", allnodes[20].OwnPublicKey)
+	fmt.Println("leader is", allnodes[20].leader)
+	fmt.Println("leader public key is", allnodes[20].LeadersPublicKey)
+
+	fmt.Println("before leader")
 	leaderElection := NewLeaderElection(allnodes)
 	leaderID, err := leaderElection.ElectLeader()
 	if err != nil {
@@ -36,8 +37,15 @@ func main() {
 
 	fmt.Println("Leader elected:", leaderID)
 
-	fmt.Println(allnodes[17].ID)
-	fmt.Println(allnodes[17].leader)
+	fmt.Println("node id is", allnodes[17].ID)
+	fmt.Println("node own public key is", allnodes[17].OwnPublicKey)
+	fmt.Println("leader is", allnodes[17].leader)
+	fmt.Println("leader public key is", allnodes[17].LeadersPublicKey)
+
+	fmt.Println("node id is", allnodes[20].ID)
+	fmt.Println("node own public key is", allnodes[20].OwnPublicKey)
+	fmt.Println("leader is", allnodes[20].leader)
+	fmt.Println("leader public key is", allnodes[20].LeadersPublicKey)
 
 	//printFinger(allnodes[0])
 	//printNames(allnodes[0])
