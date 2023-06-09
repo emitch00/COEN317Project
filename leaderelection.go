@@ -68,7 +68,7 @@ func (le *LeaderElection) ElectLeader() (int, *Node, error) {
 		if value.ID == leaderID {
 			break
 		}
-		fmt.Println("incrementing leaderIndex")
+		//fmt.Println("incrementing leaderIndex")
 		leaderIndex = leaderIndex + 1
 	}
 

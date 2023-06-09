@@ -51,7 +51,7 @@ func createUser(id int, new info) *Node {
 	//var databaseName = "d" + databaseNumb
 	var stringDNumb = strconv.Itoa(databaseNumb)
 	var databaseName = "db" + stringDNumb
-	fmt.Println(databaseName)
+	//fmt.Println(databaseName)
 	node := &Node{
 		ID:               id,
 		Successor:        nil,
@@ -70,7 +70,7 @@ func createUser(id int, new info) *Node {
 		//return nil
 	//}
 
-	fmt.Println(node.database)
+	//fmt.Println(node.database)
 
 	db1, err := sqlx.Connect("postgres", db1ConnectionString)
 	if err != nil {
@@ -91,17 +91,17 @@ func createUser(id int, new info) *Node {
 	//defer db3.Close()
 
 	if(node.database == "db1"){
-		participantname = &Participant{DB: db1, ID:new.username, Password:new.password}
-		fmt.Println("Participant values")
-		fmt.Println(db1)
-		fmt.Println(new.username)
-		fmt.Println(new.password)
+		participantname = &Participant{DB: db1, ID:new.Username, Password:new.Password}
+		//fmt.Println("Participant values")
+		//fmt.Println(db1)
+		//fmt.Println(new.username)
+		//fmt.Println(new.password)
 	}else if(node.database == "db2"){
-		participantname = &Participant{DB: db2, ID:new.username, Password:new.password}
+		participantname = &Participant{DB: db2, ID:new.Username, Password:new.Password}
 	}else if(node.database == "db3"){
-		participantname = &Participant{DB: db3, ID:new.username, Password:new.password}
+		participantname = &Participant{DB: db3, ID:new.Username, Password:new.Password}
 	}else{
-		fmt.Println("not enough databases")
+		//fmt.Println("not enough databases")
 		return nil
 	}
 	
@@ -197,7 +197,7 @@ func lookup(s string) bool {
 	for hashValue > currentNode.ID {
 		if hashValue == currentNode.ID {
 			for _, infoCheck := range currentNode.storage {
-				if s == infoCheck.name {
+				if s == infoCheck.Name {
 					return true
 				}
 			}
@@ -207,7 +207,7 @@ func lookup(s string) bool {
 			for _, fingerEntry := range currentNode.Finger {
 				if hashValue == fingerEntry.ID {
 					for _, infoCheck := range fingerEntry.storage {
-						if s == infoCheck.name {
+						if s == infoCheck.Name {
 							return true
 						}
 					}
@@ -230,9 +230,9 @@ func userCreation(s string, u int, p string) {
 		fmt.Println("This name has been picked before. You need to pick another name")
 	} else if !lookup(s) {
 		var newUser info
-		newUser.name = s
-		newUser.username = u
-		newUser.password = p
+		newUser.Name = s
+		newUser.Username = u
+		newUser.Password = p
 		createUser(hash(s), newUser)
 	}
 }
@@ -255,7 +255,7 @@ func printNames(n *Node) {
 	fmt.Printf("Node with id %d ", n.ID)
 	fmt.Println(" ")
 	for i := 0; i < len(n.storage); i++ {
-		fmt.Println(n.storage[i].name)
+		fmt.Println(n.storage[i].Name)
 	}
 }
 
@@ -290,7 +290,7 @@ func testSpeed() {
 
 	for _, value := range allnodes {
 		for _, value2 := range value.storage {
-			if value2.name == "testuser" {
+			if value2.Name == "testuser" {
 				entireLookup = true
 			}
 		}
@@ -316,5 +316,5 @@ func testSpeed() {
 const (
 	m             = 8
 	bits          = 256
-	startingUsers = 1000
+	startingUsers = 10
 )

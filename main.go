@@ -20,9 +20,9 @@ var db2 *sqlx.DB
 var db3 *sqlx.DB
 
 type info struct {
-	name     string `json:"name"`
-	username int `json:"username"`
-	password string `json:"password"`
+	Name     string `json:"name"`
+	Username int `json:"username"`
+	Password string `json:"password"`
 }
 
 func main(){
@@ -46,7 +46,23 @@ func main(){
 	defer db3.Close()
 	*/
 
+
+
+
+
+
+
 	//loadRing()
+	//testSpeed()
+
+
+
+
+
+
+
+
+
 
 	var coordinator *Coordinator
 	//coordinator := &Coordinator{DB: db1}
@@ -75,31 +91,31 @@ func main(){
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		//userData.name = "user1"
-		//userData.username = 1
-		//userData.password = "one"
-		fmt.Println("Userdata.username", userData.name)
-		fmt.Println("Userdata.username", userData.username)
-		fmt.Println("Userdata.username", userData.password)
+		userData.Name = "user1"
+		userData.Username = 1
+		userData.Password = "one"
+		//fmt.Println("Userdata.username", userData.name)
+		//fmt.Println("Userdata.username", userData.username)
+		//fmt.Println("Userdata.username", userData.password)
 
-		userCreation(userData.name, userData.username, userData.password)
+		userCreation(userData.Name, userData.Username, userData.Password)
 
-		fmt.Println("node id is", allnodes[0].ID)
-		fmt.Println("node own public key is", allnodes[0].OwnPublicKey)
-		fmt.Println("leader is", allnodes[0].leader)
-		fmt.Println("leader public key is", allnodes[0].LeadersPublicKey)
+		//fmt.Println("node id is", allnodes[0].ID)
+		//fmt.Println("node own public key is", allnodes[0].OwnPublicKey)
+		//fmt.Println("leader is", allnodes[0].leader)
+		//fmt.Println("leader public key is", allnodes[0].LeadersPublicKey)
 
 		//var stringid := strconv.Itoa(node.ID)
 		//var participantname = "participant%s" 
 		
 		//var p *Participant
 		
-		fmt.Println("before election")
+		//fmt.Println("before election")
 		var leaderNode *Node
 		leaderElection := NewLeaderElection(allnodes)
-		fmt.Println("past new leader election")
+		//fmt.Println("past new leader election")
 		leaderID, leaderNode, err := leaderElection.ElectLeader()
-		fmt.Println("past elect leader")
+		//fmt.Println("past elect leader")
 		if err != nil {
 			fmt.Println("Error electing leader:", err)
 			return
@@ -107,7 +123,7 @@ func main(){
 
 		fmt.Println("Leader elected:", leaderID)
 		var leaderdb string = leaderNode.database
-		fmt.Println("leader database", leaderdb)
+		//fmt.Println("leader database", leaderdb)
 
 		if leaderdb == "db1"{
 			coordinator = &Coordinator{DB: db1}
@@ -116,7 +132,7 @@ func main(){
 		}else if leaderdb == "db3" {
 			coordinator = &Coordinator{DB: db3}
 		}else{
-			fmt.Println("not enough databases")
+			//fmt.Println("not enough databases")
 			return
 		}
 
@@ -124,7 +140,7 @@ func main(){
 			"message": "successfully entered network",
 		})
 
-		fmt.Println("Number of participants", len(namesofParticipants))
+		//fmt.Println("Number of participants", len(namesofParticipants))
 
 		register(router, coordinator, namesofParticipants)
 	})
