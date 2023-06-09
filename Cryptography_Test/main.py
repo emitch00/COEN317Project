@@ -99,6 +99,7 @@ def receiving_messages(client, aes_key):
         encrypted_message = client.recv(1024)
         # Extract the digital signature from the received data
         message_signature = client.recv(1024)
+        
         # Verify the digital signature
         if rsa.verify(encrypted_message, message_signature, public_partner):
             # The digital signature is valid, proceed with decryption and printing
