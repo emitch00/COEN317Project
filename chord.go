@@ -7,19 +7,29 @@ import (
 	"math/rand"
 	"sync"
 	"time"
+	"strconv"
+	"github.com/jmoiron/sqlx"
+	"log"
 )
 
 var allnodes []*Node //global array to account all available nodes in ascending order
 var leaderID int
 var leader LeaderElection
 var allnodesID []int
+var databaseNumb int = 0
+var namesofParticipants []*Participant
+
+const	(db1ConnectionString = "host=127.0.0.1 port=1433 user=postgres password=password dbname=db1 sslmode=disable"
+		db2ConnectionString = "host=127.0.0.1 port=1433 user=postgres password=password dbname=db2 sslmode=disable"
+		db3ConnectionString = "host=127.0.0.1 port=1433 user=postgres password=password dbname=db3 sslmode=disable"
+		)
 
 // represents the client's information
-type info struct {
-	name     string
-	Username string
-	password string
-}
+//type info struct {
+//	name     string `json:"name"`
+//	username int `json:"username"`
+//	password string `json:"password"`
+//}
 
 // each node has a finger table to oversee other nodes it can go to
 type Node struct {
@@ -32,17 +42,70 @@ type Node struct {
 	LeadersPublicKey int
 	privateKey       int
 	lock             sync.Mutex
+	database		 string
 }
 
 // either a node is created to add the user or the uder is added to a preexisting node
 func createUser(id int, new info) *Node {
+	databaseNumb = databaseNumb + 1
+	//var databaseName = "d" + databaseNumb
+	var stringDNumb = strconv.Itoa(databaseNumb)
+	var databaseName = "db" + stringDNumb
+	fmt.Println(databaseName)
 	node := &Node{
 		ID:               id,
 		Successor:        nil,
 		Finger:           make([]*Node, m),
 		LeadersPublicKey: 420,
 		OwnPublicKey:     699,
+		database:		  databaseName,
 	}
+
+	var participantname *Participant
+	//fmt.Println("%s", participantname)
+	//nametoInt, err := strconv.Atoi(new.name)
+	//fmt.Println(nametoInt)
+	//if err != nil{
+		//fmt.Println("string conversion error")
+		//return nil
+	//}
+
+	fmt.Println(node.database)
+
+	db1, err := sqlx.Connect("postgres", db1ConnectionString)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	//defer db1.Close()
+
+	db2, err := sqlx.Connect("postgres", db2ConnectionString)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	//defer db2.Close()
+
+	db3, err := sqlx.Connect("postgres", db2ConnectionString)
+	if err != nil{
+		log.Fatalln(err)
+	}
+	//defer db3.Close()
+
+	if(node.database == "db1"){
+		participantname = &Participant{DB: db1, ID:new.username, Password:new.password}
+		fmt.Println("Participant values")
+		fmt.Println(db1)
+		fmt.Println(new.username)
+		fmt.Println(new.password)
+	}else if(node.database == "db2"){
+		participantname = &Participant{DB: db2, ID:new.username, Password:new.password}
+	}else if(node.database == "db3"){
+		participantname = &Participant{DB: db3, ID:new.username, Password:new.password}
+	}else{
+		fmt.Println("not enough databases")
+		return nil
+	}
+	
+	namesofParticipants = append(namesofParticipants, participantname)
 
 	node.storage = append(node.storage, new)
 
@@ -69,6 +132,8 @@ func createUser(id int, new info) *Node {
 		//leader.nodes = append(leader.nodes, id)
 		allnodesID = append(allnodesID, id)
 	}
+
+
 
 	updateFinger()
 
@@ -160,12 +225,13 @@ func lookup(s string) bool {
 }
 
 // Users to prevent duplicate names
-func userCreation(s string, p string) {
+func userCreation(s string, u int, p string) {
 	if lookup(s) {
 		fmt.Println("This name has been picked before. You need to pick another name")
 	} else if !lookup(s) {
 		var newUser info
 		newUser.name = s
+		newUser.username = u
 		newUser.password = p
 		createUser(hash(s), newUser)
 	}
@@ -213,7 +279,7 @@ func randomString(length int) string {
 // load the ring by a number of randoms users (startingUsers)
 func loadRing() {
 	for i := 0; i < startingUsers; i++ {
-		userCreation(randomString(12), "password")
+		userCreation(randomString(12), 5, "password")
 	}
 }
 

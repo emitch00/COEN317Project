@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"fmt"
 )
 
 type LeaderElection struct {
@@ -25,14 +26,30 @@ func NewLeaderElection(nodes []*Node) *LeaderElection {
 	return le
 }
 
-func (le *LeaderElection) ElectLeader() (int, error) {
+func (le *LeaderElection) ElectLeader() (int, *Node, error) {
 	le.lock.Lock()
 	defer le.lock.Unlock()
 
 	// Check if the current leader is still a candidate
 	if _, ok := le.candidates[le.leaderID]; ok {
 		// Current leader is still available, return the current leader's ID
-		return le.leaderID, nil
+		//var leaderIndex int = 0
+
+		//for _, value := range le.candidates {
+			//if value.ID == leaderID {
+		//		break
+		//	}
+		//leaderIndex = leaderIndex + 1
+		//}
+		var leaderIndex int = 0
+		for _, value := range le.nodes {
+			if value.ID == leaderID {
+				break
+			}
+		leaderIndex = leaderIndex + 1
+		}
+
+		return le.leaderID, le.nodes[leaderIndex], nil
 	}
 
 	// Find the candidate with the highest ID
@@ -46,19 +63,21 @@ func (le *LeaderElection) ElectLeader() (int, error) {
 	// Set the candidate with the highest ID as the leader
 	le.leaderID = maxID
 
-	var leaderIndex int = 0
+	var leaderIndex int = -1
 	for _, value := range le.nodes {
 		if value.ID == leaderID {
 			break
 		}
+		fmt.Println("incrementing leaderIndex")
 		leaderIndex = leaderIndex + 1
 	}
 
 	// Update leader information on all other nodes
-
+	fmt.Println("LeaderIndex:", leaderIndex)
+	fmt.Println("LeaderIndex Public Key:", le.nodes[leaderIndex].OwnPublicKey)
 	BroadcastUpdateLeaderInfo(le.nodes, le.leaderID, le.nodes[leaderIndex].OwnPublicKey)
 
-	return le.leaderID, nil
+	return le.leaderID, le.nodes[leaderIndex], nil
 }
 
 func (le *LeaderElection) monitorLeadership() {

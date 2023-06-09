@@ -38,6 +38,7 @@ type Coordinator struct{
 //Participant data structure
 type Participant struct{
 	DB *sqlx.DB
+	name string
 	ID int
 	Password string
 }
@@ -224,6 +225,10 @@ func (c *Coordinator) ExecuteSend(ctx context.Context, prepareData Send, partici
 	}
 
 	fmt.Println("made it past funds check")
+
+	//security function
+
+
 	//Phase 1: Prepare
 	var preparedTransactions []*sqlx.Tx
 	var preparedTransactionsSend *sqlx.Tx
@@ -356,6 +361,8 @@ func (c *Coordinator) ExecuteCheck(ctx context.Context, prepareData Check, parti
 	var check bool = false
 	var participant *Participant
 	for _, p := range participants{
+		fmt.Println("Participant ids", p.ID)
+		fmt.Println("User ids", prepareData.User)
 		if(prepareData.User == p.ID){
 			check = true
 			participant = p
