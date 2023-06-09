@@ -84,8 +84,12 @@ def sending_messages(client, aes_key):
         encrypted_message = cipher.encrypt(padded_message)
         # Encrypt the message
         encrypted = iv + encrypted_message
-        # Send the encrypted message
+        # Generate a digital signature for the encrypted message
+        message_signature = rsa.sign(encrypted, private_key, "SHA-256")
+        
+        # Send the encrypted message & signature
         client.send(encrypted)
+        client.send(message_signature)
         # Print the plaintext message sent
         print("You: " + message)
 
@@ -93,16 +97,27 @@ def receiving_messages(client, aes_key):
     while True:
         # Receive the encrypted message
         encrypted_message = client.recv(1024)
-        # Extract the IV from the encrypted message
-        iv = encrypted_message[:AES.block_size]
-        # Create an AES cipher object with the key and mode (CBC)
-        cipher = AES.new(aes_key, AES.MODE_CBC, iv)
-        # Decrypt the message
-        decrypted_message = cipher.decrypt(encrypted_message[AES.block_size:])
-        # Remove the padding from the decrypted message
-        unpadded_message = unpad(decrypted_message, AES.block_size)
-        # Print out the decrypted received message
-        print("Partner: ", unpadded_message.decode("utf-8"))
+        # Extract the digital signature from the received data
+        message_signature = client.recv(1024)
+        # Verify the digital signature
+        if rsa.verify(encrypted_message, message_signature, public_partner):
+            # The digital signature is valid, proceed with decryption and printing
+            print("Message received and verified successfully.")
+            # Extract the IV from the encrypted message
+            iv = encrypted_message[:AES.block_size]
+            # Create an AES cipher object with the key and mode (CBC)
+            cipher = AES.new(aes_key, AES.MODE_CBC, iv)
+            # Decrypt the message
+            decrypted_message = cipher.decrypt(encrypted_message[AES.block_size:])
+            # Remove the padding from the decrypted message
+            unpadded_message = unpad(decrypted_message, AES.block_size)
+            # Print out the decrypted received message
+            print("Partner: ", unpadded_message.decode("utf-8"))
+        else:
+            # The digital signature is invalid, handle accordingly (end communication)
+            print("Failed to verify the partner's signature. Aborting.")
+            exit()
+
 
 threading.Thread(target=sending_messages, args=(client, aes_key,)).start()
 threading.Thread(target=receiving_messages, args=(client, aes_key,)).start()
